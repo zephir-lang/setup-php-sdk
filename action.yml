@@ -34,10 +34,9 @@
     using: composite
     steps:
       - name: Set Up PHP SDK with Developer Pack
-        id: setup-php-sdk
         shell: powershell
         run: |
-          ./src/setup-php-sdk `
+          .\src\setup-php-sdk.ps1 `
             -PhpVersion ${{ inputs.php_version }} `
             -ThreadSafety ${{ inputs.ts }} `
             -VC ${{ inputs.msvc }} `
