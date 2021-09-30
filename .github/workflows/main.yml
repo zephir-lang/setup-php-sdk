@@ -74,7 +74,7 @@ jobs:
 
       - name: Setup PHP SDK and Developer Pack
         uses: ./
-          with:
+        with:
           php_version: ${{ matrix.php }}
           ts: ${{ matrix.ts }}
           msvc: ${{ matrix.msvc }}
