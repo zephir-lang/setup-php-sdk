@@ -54,12 +54,12 @@ jobs:
 
       - name: Prepare
         run: |
-          if (-not Test-Path ${{ env.CACHE_DIR }}) { mkdir ${{ env.CACHE_DIR }} }
-          if (-not Test-Path ${{ env.INSTALL_DIR }}) { mkdir ${{ env.INSTALL_DIR }} }
+          if (-not (Test-Path "${{ env.CACHE_DIR }}")) { mkdir "${{ env.CACHE_DIR }}" }
+          if (-not (Test-Path "${{ env.INSTALL_DIR }}")) { mkdir "${{ env.INSTALL_DIR }}" }
 
       - name: Setup PHP SDK and Developer Pack
         run: |
-          ./src/setup-php-sdk.ps1 `
+          .\src\setup-php-sdk.ps1 `
             -PhpVersion ${{ matrix.php}} `
             -ThreadSafety ${{ matrix.ts }} `
             -VC ${{ matrix.msvc }} `
