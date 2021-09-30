@@ -36,7 +36,7 @@
       - name: Set Up PHP SDK with Developer Pack
         shell: powershell
         run: |
-          ${{github.action_path}}src\setup-php-sdk.ps1 `
+          ${{github.action_path}}\src\setup-php-sdk.ps1 `
             -PhpVersion ${{ inputs.php_version }} `
             -ThreadSafety ${{ inputs.ts }} `
             -VC ${{ inputs.msvc }} `
