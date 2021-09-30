@@ -31,6 +31,13 @@ jobs:
             arch: 'x64'
             msvc: 'vc15'
 
+          - name: win2019-php80-nts-x64-vs16
+            os: windows-2019
+            php: '8.0'
+            ts: 'nts'
+            arch: 'x64'
+            msvc: 'vs16'
+
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
