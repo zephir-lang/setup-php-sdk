@@ -73,7 +73,7 @@ jobs:
           if (-not (Test-Path "${{ env.INSTALL_DIR }}")) { mkdir "${{ env.INSTALL_DIR }}" }
 
       - name: Setup PHP SDK and Developer Pack
-        uses: .\
+        uses: ${{ github.workspace }}
         with:
           php_version: ${{ matrix.php }}
           ts: ${{ matrix.ts }}
