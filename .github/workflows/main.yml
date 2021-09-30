@@ -1,0 +1,86 @@
+name: Test
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+
+env:
+  CACHE_DIR: 'C:\Downloads'
+  INSTALL_DIR: 'C:\tools'
+
+defaults:
+  run:
+    shell: powershell
+
+jobs:
+  test:
+    name: "PHP v${{ matrix.php }} (${{ matrix.ts }}) ${{ matrix.arch }} - ${{ matrix.msvc }}"
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        include:
+          - name: win2016-php74-nts-x64-vc15
+            os: windows-2016
+            php: '7.4'
+            ts: 'nts'
+            arch: 'x64'
+            msvc: 'vc15'
+
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: psr, zip, mysqli
+          ini-values: >-
+            variables_order=EGPCS,
+            enable_dl=On,
+            allow_url_fopen=On,
+            error_reporting=-1,
+            memory_limit=1G,
+            date.timezone=UTC,
+        env:
+          PHPTS: ${{ matrix.ts }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Prepare
+        run: |
+          mkdir ${{ env.CACHE_DIR }}
+          mkdir ${{ env.INSTALL_DIR }}
+
+      - name: Setup PHP SDK and Developer Pack
+        run: |
+          ./src/setup-php-sdk.ps1 `
+            -PhpVersion ${{ matrix.php}} `
+            -ThreadSafety ${{ matrix.ts }} `
+            -VC ${{ matrix.msvc }} `
+            -Arch ${{ matrix.arch }} `
+            -InstallDir ${{ env.INSTALL_DIR }} `
+            -CacheDir ${{ env.CACHE_DIR }}
+
+      - name: Tests
+        run: |
+          $exitCode = 0
+
+          Write-Output "::group::Check directories"
+          if ("${{ env.INSTALL_DIR }}\php-sdk") {
+            Write-Output "PHP SDK: ${{ env.INSTALL_DIR }}\php-sdk"
+          } else {
+            Write-Output "PHP SDK not exists"
+            $exitCode = 1
+          }
+          Write-Output "::endgroup::"
+
+          exit $exitCode
+
+
+
