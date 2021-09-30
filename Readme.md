@@ -1,5 +1,6 @@
 # Setup PHP SDK tool kit for Windows PHP builds
 
+[![Test][test badge]][actions link]
 [![MIT License][license badge]](./LICENSE)
 
 [Github Action][ga-link] to set up an environment for building PHP extensions on Windows.
@@ -43,4 +44,6 @@ Setup PHP SDK action licensed under the MIT License. See the [LICENSE](./LICENSE
 [php-sdk-link]:         https://github.com/microsoft/php-sdk-binary-tools
 [php-dev-pack-link]:    https://windows.php.net/
 
+[test badge]:           https://github.com/zephir-lang/setup-php-sdk/actions/workflows/main.yml/badge.svg
+[actions link]:         https://github.com/zephir-lang/setup-php-sdk/actions
 [license badge]:        https://poser.pugx.org/phalcon/zephir/license.svg
