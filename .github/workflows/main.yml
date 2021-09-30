@@ -73,14 +73,14 @@ jobs:
           if (-not (Test-Path "${{ env.INSTALL_DIR }}")) { mkdir "${{ env.INSTALL_DIR }}" }
 
       - name: Setup PHP SDK and Developer Pack
-        run: |
-          .\src\setup-php-sdk.ps1 `
-            -PhpVersion ${{ matrix.php}} `
-            -ThreadSafety ${{ matrix.ts }} `
-            -VC ${{ matrix.msvc }} `
-            -Arch ${{ matrix.arch }} `
-            -InstallDir ${{ env.INSTALL_DIR }} `
-            -CacheDir ${{ env.CACHE_DIR }}
+        uses: ./
+        with:
+          php_version: ${{ matrix.php }}
+          ts: ${{ matrix.ts }}
+          msvc: ${{ matrix.msvc }}
+          arch: ${{ matrix.arch }}
+          install_dir: ${{ env.INSTALL_DIR }}
+          cache_dir: ${{ env.CACHE_DIR }}
 
       - name: Tests
         run: |
