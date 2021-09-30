@@ -106,7 +106,7 @@ Write-Output "::group::Installing PHP SDK binary tools"
 Install-SDK -version $PhpVersion -cacheDir $CacheDir -installDir $InstallDir
 Write-Output "::endgroup::"
 
-Write-Output "::group::Installing PHP Develeoper Pack"
+Write-Output "::group::Installing PHP Developer Pack"
 Install-DevPack -version $PhpVersion -ts $ThreadSafety -msvc $VC -arch $Arch `
     -cacheDir $CacheDir -installDir $InstallDir
 Write-Output "::endgroup::"
@@ -115,4 +115,7 @@ Write-Output "::group::Add PHP SDK and PHP Developer Pack to system PATH"
 Add-Content $Env:GITHUB_PATH "${InstallDir}\php-sdk\bin"
 Add-Content $Env:GITHUB_PATH "${InstallDir}\php-sdk\msys2\usr\bin"
 Add-Content $Env:GITHUB_PATH "${InstallDir}\php-devpack"
+Write-Output "${InstallDir}\php-sdk\bin"
+Write-Output "${InstallDir}\php-sdk\msys2\usr\bin"
+Write-Output "${InstallDir}\php-devpack"
 Write-Output "::endgroup::"

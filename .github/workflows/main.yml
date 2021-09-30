@@ -73,9 +73,15 @@ jobs:
 
           Write-Output "::group::Check directories"
           if (Test-Path "${{ env.INSTALL_DIR }}\php-sdk") {
-            Write-Output "PHP SDK: ${{ env.INSTALL_DIR }}\php-sdk"
+            Write-Output "PHP SDK installed: ${{ env.INSTALL_DIR }}\php-sdk"
           } else {
             Write-Output "PHP SDK not exists"
+            $exitCode = 1
+          }
+          if (Test-Path "${{ env.INSTALL_DIR }}\php-devpack") {
+            Write-Output "PHP Developer Pack installed: ${{ env.INSTALL_DIR }}\php-devpack"
+          } else {
+            Write-Output "PHP Developer Pack not exists"
             $exitCode = 1
           }
           Write-Output "::endgroup::"
