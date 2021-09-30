@@ -54,8 +54,8 @@ jobs:
 
       - name: Prepare
         run: |
-          mkdir ${{ env.CACHE_DIR }}
-          mkdir ${{ env.INSTALL_DIR }}
+          if (-not Test-Path ${{ env.CACHE_DIR }}) { mkdir ${{ env.CACHE_DIR }} }
+          if (-not Test-Path ${{ env.INSTALL_DIR }}) { mkdir ${{ env.INSTALL_DIR }} }
 
       - name: Setup PHP SDK and Developer Pack
         run: |
@@ -72,7 +72,7 @@ jobs:
           $exitCode = 0
 
           Write-Output "::group::Check directories"
-          if ("${{ env.INSTALL_DIR }}\php-sdk") {
+          if (Test-Path "${{ env.INSTALL_DIR }}\php-sdk") {
             Write-Output "PHP SDK: ${{ env.INSTALL_DIR }}\php-sdk"
           } else {
             Write-Output "PHP SDK not exists"
