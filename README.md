@@ -5,11 +5,11 @@
 
 [Github Action][ga-link] to set up an environment for building PHP extensions on Windows.
 
-#### This action set up and configure:
+#### This action sets up and configures:
 
 - [PHP SDK][php-sdk-link] - a tool kit for Windows PHP builds
-- [PHP Developer Pack][php-dev-pack-link] - libraries, c headers, scripts and phpize utility
-- Add to system path SDK and Developer tools
+- [PHP Developer Pack][php-dev-pack-link] - libraries, c headers, scripts and `phpize` utility
+- SDK and Developer tools - added to the system path
 
 ## Usage
 
