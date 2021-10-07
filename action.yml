@@ -1,6 +1,9 @@
   name: 'Setup PHP SDK tool kit for Windows PHP builds'
   description: 'Setup Windows build environment for PHP extensions builds with Microsoft Visual C++ command line'
   author: AlexNDRmac
+  branding:
+    icon: arrow-down-circle
+    color: green
 
   inputs:
     php_version:
