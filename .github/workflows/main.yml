@@ -31,19 +31,19 @@ jobs:
 
       matrix:
         include:
-          - name: win2016-php74-nts-x64-vc15
-            os: windows-2016
-            php: '7.4'
-            ts: 'nts'
-            arch: 'x64'
-            msvc: 'vc15'
-
-          - name: win2019-php80-nts-x64-vs16
-            os: windows-2019
-            php: '8.0'
+          - name: win2022-php82-nts-x64-vs16
+            os: windows-2022
+            php: '8.2'
             ts: 'nts'
             arch: 'x64'
             msvc: 'vs16'
+
+          - name: win2022-php84-nts-x64-vs17
+            os: windows-2022
+            php: '8.4'
+            ts: 'nts'
+            arch: 'x64'
+            msvc: 'vs17'
 
     steps:
       - name: Setup PHP
