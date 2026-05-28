@@ -8,6 +8,90 @@ param (
     [Parameter(Mandatory = $false)] [System.String] $CacheDir
 )
 
+function Test-ZipArchive {
+    <#
+        .SYNOPSIS
+            Returns $true when $Path is a complete, readable ZIP archive.
+
+            Reading the entry list forces the End of Central Directory record
+            to be parsed, which is exactly the part that is missing when a
+            download is truncated ("End of Central Directory record could not
+            be found").
+    #>
+
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)] [System.String] $Path
+    )
+
+    if (-not (Test-Path $Path) -or (Get-Item $Path).Length -eq 0) {
+        return $false
+    }
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction SilentlyContinue
+
+    try {
+        $zip = [System.IO.Compression.ZipFile]::OpenRead($Path)
+        try {
+            $null = $zip.Entries.Count
+        } finally {
+            $zip.Dispose()
+        }
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Save-RemoteArchive {
+    <#
+        .SYNOPSIS
+            Download a ZIP archive with retries and integrity validation.
+
+            Invoke-WebRequest on a flaky connection can return without error
+            yet leave a truncated file on disk; the subsequent Expand-Archive
+            then fails. Validate every download and retry with backoff,
+            discarding any partial/corrupt file before each attempt.
+    #>
+
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)] [System.String] $Url,
+        [Parameter(Mandatory = $true)] [System.String] $OutFile,
+        [Parameter(Mandatory = $false)] [System.Int32]  $MaxAttempts = 5
+    )
+
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+        # Always start from a clean slate so a previous partial file is never reused.
+        if (Test-Path $OutFile) {
+            Remove-Item $OutFile -Force -ErrorAction SilentlyContinue
+        }
+
+        try {
+            Invoke-WebRequest $Url -OutFile $OutFile -UseBasicParsing -ErrorAction Stop
+
+            if (Test-ZipArchive $OutFile) {
+                return
+            }
+
+            Write-Warning "Downloaded archive failed integrity check (attempt ${attempt}/${MaxAttempts}): ${Url}"
+        } catch {
+            Write-Warning "Download attempt ${attempt}/${MaxAttempts} failed for ${Url}: $_"
+        }
+
+        if (Test-Path $OutFile) {
+            Remove-Item $OutFile -Force -ErrorAction SilentlyContinue
+        }
+
+        if ($attempt -lt $MaxAttempts) {
+            $delay = [Math]::Min(30, [Math]::Pow(2, $attempt))
+            Start-Sleep -Seconds $delay
+        }
+    }
+
+    throw "Failed to download a valid archive from ${Url} after ${MaxAttempts} attempts."
+}
+
 function Install-SDK {
     <#
         .SYNOPSIS
@@ -36,14 +120,9 @@ function Install-SDK {
             "${cacheDir}\${PhpSdkZip}"
         }
 
-        if (-not (Test-Path $temp) -or (Get-Item $temp).length -eq 0kb) {
+        if (-not (Test-ZipArchive $temp)) {
             Write-Output "Downloading PHP SDK binary tools v${SdkVersion}"
-            try {
-                Invoke-WebRequest $RemoteUrl -OutFile $temp -UseBasicParsing -ErrorAction Stop
-            } catch {
-                Write-Error "Failed to download PHP SDK from ${RemoteUrl}: $_"
-                throw
-            }
+            Save-RemoteArchive -Url $RemoteUrl -OutFile $temp
         }
 
         if (-not (Test-Path "$installDir\php-sdk")) {
@@ -110,14 +189,9 @@ function Install-DevPack {
             "${cacheDir}\${devPackName}"
         }
 
-        if (-not (Test-Path $temp) -or (Get-Item $temp).length -eq 0kb) {
+        if (-not (Test-ZipArchive $temp)) {
             Write-Output "Downloading PHP Developer Pack for PHP v${phpVer} from ${RemoteUrl}"
-            try {
-                Invoke-WebRequest $RemoteUrl -OutFile $temp -UseBasicParsing -ErrorAction Stop
-            } catch {
-                Write-Error "Failed to download PHP Developer Pack from ${RemoteUrl}: $_"
-                throw
-            }
+            Save-RemoteArchive -Url $RemoteUrl -OutFile $temp
         }
 
         if (-not (Test-Path "$installDir\php-devpack")) {
