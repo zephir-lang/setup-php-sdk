@@ -182,6 +182,9 @@ function Install-DevPack {
 
         $devPackName = "php-devel-pack-${phpVer}-${tsPrefix}-${msvc}-${arch}.zip"
         $RemoteUrl = "${baseUrl}/${devPackName}"
+        # A rebuilt release carries a "-N" suffix ("8.3.36-1") in releases.json and in the zip
+        # name, but the directory inside the zip is still named after the plain PHP version.
+        $devPackDir = "php-" + ($phpVer -replace '-\d+$', '') + "-devel-${msvc}-${arch}"
 
         $temp = if (!$cacheDir) {
             New-TemporaryFile | Rename-Item -NewName {$_.Name + ".zip"} -PassThru
@@ -196,10 +199,10 @@ function Install-DevPack {
 
         if (-not (Test-Path "$installDir\php-devpack")) {
             Expand-Archive $temp -DestinationPath $installDir
-            Rename-Item (Resolve-Path "${installDir}\php-${phpVer}-devel-${msvc}-${arch}") "php-devpack"
+            Rename-Item (Resolve-Path "${installDir}\${devPackDir}") "php-devpack"
         }
 
-        Write-Output "PHP Developer Pack php-${phpVer}-devel-${msvc}-${arch} installed to ${installDir}\php-devpack"
+        Write-Output "PHP Developer Pack ${devPackDir} installed to ${installDir}\php-devpack"
     }
 }
 
